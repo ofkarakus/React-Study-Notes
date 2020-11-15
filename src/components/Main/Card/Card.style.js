@@ -1,12 +1,16 @@
 import styled from "styled-components";
 
 export const CardContainer = styled.div`
-  width: 20vw;
-  height: 45vh;
-  margin: 2rem;
-  display: inline-block;
+  width: 15rem;
+  height: 25rem;
   border-radius: 10px;
-  background-color: #e1bee7;
+  background-color: #fafafa;
+  margin-bottom: 2rem;
+  transition: 0.3s;
+  box-shadow: 0.3rem 0.3rem 0.6rem gray;
+  &:hover {
+    transform: scale(1.02)
+  } 
 `;
 
 export const TitleContainer = styled.div`
@@ -28,7 +32,6 @@ export const Poster = styled.img`
 
 export const Title = styled.p`
   margin: 1.1rem;
-  
 `;
 
 export const Point = styled.p`

@@ -1,51 +1,75 @@
 import { useState, useEffect } from "react";
-import CardList from "./components/CardList/CardList";
+import CardList from "./components/Main/CardList/CardList";
+import SearchBar from "./components/Header/SearchBar/SearchBar";
+import Pagination from "./components/Footer/Pagination/Pagination";
 import axios from "axios";
-import "./App.style.scss";
 
 function App() {
-  const [search, setSearch] = useState("");
-  const [searchResults, setSearchResults] = useState(null);
+  const [movieList, setMovieList] = useState([]);
+  const discoverBaseUrl = "https://api.themoviedb.org/3/discover/movie";
+  const imgBaseUrl = "https://image.tmdb.org/t/p/w600_and_h900_bestv2";
+  const apiKey = "f27d3b03d7a2f1f56b22c93722529da1";
 
-  console.log(searchResults);
+  const fetchData = async () => {
+    const {
+      data: { results },
+    } = await axios.get(discoverBaseUrl, {
+      params: {
+        api_key: apiKey,
+        language: "en-US",
+        sort_by: "popularity.desc",
+        include_adult: false,
+        with_genres: 36,
+      },
+    });
+    setMovieList(results);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const [searchResults, setSearchResults] = useState(null);
+  const [totalPages, setTotalPages] = useState(null);
+  const [query, setQuery] = useState("");
 
   const searchMovies = async () => {
     const {
       data: { results },
+      data: { total_pages },
     } = await axios.get("https://api.themoviedb.org/3/search/movie", {
       params: {
-        api_key: "f27d3b03d7a2f1f56b22c93722529da1",
-        query: search,
+        api_key: apiKey,
+        query: query,
       },
     });
     setSearchResults(results);
+    setTotalPages(total_pages);
   };
 
+  useEffect(() => {
+    searchMovies();
+  }, [query]);
+
   return (
-    <div id="container">
+    <div>
       <header>
-        <input
-          id="searchBar"
-          placeholder="Search"
-          onChange={({ target: { value } }) => {
-            setSearch(value);
+        <SearchBar
+          onSendQuery={(query) => {
+            setQuery(query);
           }}
-        ></input>
-        <button
-          id="searchBtn"
-          onClick={() => {
-            searchMovies();
-          }}
-        >
-          Search
-        </button>
+        ></SearchBar>
       </header>
-
       <main>
-        <CardList searchResults={searchResults} />
+        <CardList
+          imgBaseUrl={imgBaseUrl}
+          movieList={movieList}
+          searchResults={searchResults}
+        />
       </main>
-
-      <footer></footer>
+      <footer>
+        <Pagination totalPages={totalPages} />
+      </footer>
     </div>
   );
 }
